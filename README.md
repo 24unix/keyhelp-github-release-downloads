@@ -9,14 +9,15 @@ A lightweight GitHub release download tracker widget for the KeyHelp admin dashb
 > **Requirements**
 >
 > - **Panel:** KeyHelp admin dashboard (`admin_dashboard`) with `jQuery` available.
-> - **PHP & Outbound HTTPS:** PHP endpoint (`plugin_stats.php`) reachable under `dashboard-layout/` with outbound internet access (`curl` / `allow_url_fopen`) to `api.github.com`.
+> - **PHP & Outbound HTTPS:** PHP endpoint (`plugin_stats.php`) reachable under `dashboard-layout/` with outbound internet access (`curl` / `allow_url_fopen`) to `api.github.com` and/or your Gitea host.
 > - **Permissions:** Directory and files owned by `keyhelp:keyhelp` so KeyHelp can serve the frontend script and execute `plugin_stats.php`.
 
 ***
 
 ## Features
 
-- Responsive 3-column grid displaying total downloads, latest release assets, and per-file download counts for each configured GitHub repository.
+- Supports GitHub and Gitea/Forgejo repositories side by side: `github.com` URLs use the GitHub API, any other host is queried via the Gitea API (`/api/v1`). All releases are fetched page by page, so totals cover the full history.
+- Responsive 3-column grid displaying total downloads, latest release assets, and per-file download counts for each configured repository.
 - Compact floating popup for viewing older releases and their asset counts without stretching dashboard column heights.
 - Simple `.conf`-based repository configuration (`download_box.conf`) without touching JavaScript or PHP code.
 - Automatic Dark & Light Mode detection matching your active KeyHelp theme.
