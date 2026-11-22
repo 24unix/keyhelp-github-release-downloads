@@ -598,8 +598,8 @@ if ('admin_dashboard' === getUrlQueryParameterValue('page')) {
             let items = Array.isArray(data.items) ? data.items : [];
             if (!items.length) {
                 let emptyMsg = isGerman
-                    ? 'Keine Repository-URLs (GitHub/Gitea) in <code>download_box.conf</code> eingetragen. Bitte die <code>download_box.conf</code> bearbeiten und mindestens eine Repository-URL hinzufügen.'
-                    : 'No repository URLs (GitHub/Gitea) found in <code>download_box.conf</code>. Please edit <code>download_box.conf</code> and add at least one repository URL.';
+                    ? 'Keine Repository-URLs (GitHub/Gitea) in <code>download_box.conf</code> eingetragen. Falls die Datei fehlt, <code>download_box.conf.example</code> nach <code>download_box.conf</code> kopieren und mindestens eine Repository-URL eintragen.'
+                    : 'No repository URLs (GitHub/Gitea) found in <code>download_box.conf</code>. If the file is missing, copy <code>download_box.conf.example</code> to <code>download_box.conf</code> and add at least one repository URL.';
                 $('#plugin-stats-content').html(`<div class="kh-dl-empty">${emptyMsg}</div>`);
                 syncThemeMode();
                 $(document).trigger('pluginStatsBoxReady');
