@@ -89,8 +89,12 @@ function fetchJson(string $url): array {
     }
 
     // Gitea liefert die Gesamtzahl im Header X-Total-Count (fürs Paging)
+    // PHP 8.4+: http_get_last_response_headers(); $http_response_header ist ab 8.5 deprecated
+    $headers = function_exists('http_get_last_response_headers')
+        ? (http_get_last_response_headers() ?? [])
+        : ($http_response_header ?? []);
     $totalCount = null;
-    foreach (($http_response_header ?? []) as $h) {
+    foreach ($headers as $h) {
         if (stripos($h, 'X-Total-Count:') === 0) {
             $totalCount = (int)trim(substr($h, strlen('X-Total-Count:')));
         }
@@ -106,13 +110,17 @@ function fetchAllReleases(string $apiUrl, string $forge): array {
 
     for ($page = 1; $page <= 20; $page++) {
         $res = fetchJson("{$apiUrl}?{$sizeParam}={$pageSize}&page={$page}");
+        if (!isset($res['_error']) && !array_is_list($res['data'])) {
+            $res = ['_error' => (string)($res['data']['message'] ?? 'Unerwartete API-Antwort')];
+        }
         if (isset($res['_error'])) {
+            // Fehler auf einer Folgeseite: bereits geladene Releases behalten
+            if ($all) {
+                break;
+            }
             return $res;
         }
         $rels = $res['data'];
-        if (isset($rels['message']) && !array_is_list($rels)) {
-            return ['_error' => (string)$rels['message']];
-        }
         if (!$rels) {
             break;
         }
@@ -122,7 +130,8 @@ function fetchAllReleases(string $apiUrl, string $forge): array {
             if (count($all) >= $res['totalCount']) {
                 break;
             }
-        } elseif (count($rels) < $pageSize) {
+        } elseif ($forge === 'github' && count($rels) < $pageSize) {
+            // Gitea ohne X-Total-Count: weiter bis zur leeren Seite (Server-Maximum kann < limit sein)
             break;
         }
     }
